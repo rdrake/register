@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% import "bootstrap_wtf.html" as wtf %}
+
+{% block content %}
+	<h1>Checkout</h1>
+
+	{% if fees %}
+		{% for player in fees %}
+		<strong>{{ player }}</strong>
+
+		<table class="table table-striped">
+			{% for (title, fee) in fees[player] %}
+			<tr>
+				<td>{{ title }}</td>
+				<td style="text-align: right">${{ "%0.2f"|format((fee / 100)|float) }}</td>
+			</tr>
+			{% endfor %}
+		</table>
+		{% endfor %}
+
+		<strong>Total ${{ "%0.2f"|format((total / 100)|float) }}</strong>
+
+		<form action="/checkout" method="post">
+			<script src="https://checkout.stripe.com/v2/checkout.js" class="stripe-button" data-key="{{ key }}" data-label="Register" data-description="Registration fees" data-amount="{{ total }}"></script>
+		</form>
+	{% else %}
+	<p>Please <a href="/register">register a player</a> before proceeding to checkout.  If you have already registered a player and checked out, please ensure they are <a href="/verify">verified</a>.</p>
+	{% endif %}
+{% endblock %}

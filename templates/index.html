@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="hero-unit">
+	{% if current_user.is_authenticated() %}
+	<h1>Welcome, {{ current_user.first_name }}!</h1>
+
+	<p>Please use the following links in order to <a href="/register">register</a> one or more children for our summer sports program.</p>
+
+	<p>If you've already registered your child or children, please proceed to <a href="/checkout">checkout</a> in order to complete your registration.</p>
+
+	<a href="/register" class="btn btn-primary btn-large">Register Player</a>
+	<a href="/checkout" class="btn btn-large"><i class="icon-shopping-cart"></i> Checkout</a>
+
+	{% else %}
+
+	<h1>Hello!</h1>
+
+	<p>Welcome to our online registration system.  If you haven't already, please <a href="/signup">register for an account</a> in order to register your child or children for our summer sports program.</p>
+
+	<p>If you already have an account and would like to register a player, please <a href="/login">login</a>.</p>
+
+	<a href="/signup" class="btn btn-primary btn-large">Register</a>
+	<a href="/login" class="btn btn-large">Login</a>
+	{% endif %}
+</div>
+{% endblock %}

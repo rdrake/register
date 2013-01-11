@@ -1,0 +1,82 @@
+{% extends "bootstrap_base.html" %}
+
+{% block style %}
+{{ super() }}
+
+<link rel="stylesheet" type="text/css" href="/static/assets/css/datepicker.css">
+{% endblock %}
+
+{% block body_content %}
+<div class="navbar navbar-fixed-top">
+	<div class="navbar-inner">
+		<div class="container">
+			<a class="brand" href="/">Summer Sports Registration</a>
+			<div class="nav-collapse">
+				<ul class="nav">
+					<li><a href="/">Home</a></li>
+					{% if current_user.is_authenticated() %}
+						<li><a href="/register"><span class="badge badge-inverse">1</span> Register Player</a></li>
+
+						{% if current_user.players.count() > 0 %}
+							<li><a href="/checkout"><span class="badge badge-inverse">2</span> Checkout</a></li>
+						{% else %}
+							<li><a href="#"><span class="badge">2</span> Checkout</a></li>
+						{% endif %}
+
+						{% if current_user.customer_id %}
+							<li><a href="/verify"><span class="badge badge-inverse">3</span> Verify</a></li>
+						{% else %}
+							<li><a href="#"><span class="badge">3</span> Verify</a></li>
+						{% endif %}
+					{% else %}
+					<li><a href="/signup">Register</a></li>
+					{% endif %}
+				</ul>
+			</div><!--/.nav-collapse -->
+
+			<ul class="nav pull-right">
+				<li class="dropdown">
+					<a class="dropdown-toggle" data-toggle="dropdown">
+						{% if current_user.is_authenticated() %}
+						{{ current_user.get_full_name() }}
+						{% else %}
+						Guest
+						{% endif %}
+						<i class="caret"></i>
+					</a>
+					<ul class="dropdown-menu">
+						{% if current_user.is_authenticated() %}
+						<li><a href="/logout"><i class="icon-signout"></i> Logout</a></li>
+						{% else %}
+						<li><a href="/login"><i class="icon-signin"></i> Login</a></li>
+						{% endif %}
+					</ul>
+				</li>
+			</li>
+		</div>
+	</div>
+</div>
+
+<div class="container">
+	{% with messages = get_flashed_messages(with_categories=True) %}
+		{% if messages %}
+			{% for category, message in messages %}
+			<div class="alert{% if category == 'error' %} alert-error{% else %} alert-success{% endif %}">
+				<button type="button" class="close" data-dismiss="alert">&times;</button>
+				{{ message }}
+			</div>
+			{% endfor %}
+		{% endif %}
+	{% endwith %}
+
+	{% block content %}{% endblock %}
+</div>
+{% endblock %}
+
+{% block bootstrap_js_bottom %}
+{{ super() }}
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/knockout/2.2.0/knockout-min.js"></script>
+<script src="/static/assets/js/bootstrap-datepicker.js"></script>
+<script src="/static/assets/js/jquery.maskedinput.js"></script>
+{% endblock %}

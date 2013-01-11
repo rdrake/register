@@ -1,0 +1,5 @@
+ - Cleansing of input data (address, etc.)
+ - Determination of park, addition of park user fee to total
+ - Fix checkout page to look nicer
+ - Email receipts
+ - Waivers and TOS acceptance

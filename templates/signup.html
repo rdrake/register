@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% import "bootstrap_wtf.html" as wtf %}
+
+{% block content %}
+<h1>Sign Up</h1>
+	<form class="form form-horizontal" method="post" action="/signup">
+		{{ form.hidden_tag() }}
+		<fieldset>
+			<legend>Account Information</legend>
+			{{ wtf.horizontal_field(form.first_name) }}
+			{{ wtf.horizontal_field(form.last_name) }}
+		
+			{{ wtf.horizontal_field(form.password) }}
+			{{ wtf.horizontal_field(form.confirm) }}
+		</fieldset>
+
+		<fieldset>
+			<legend>Address</legend>
+			{{ wtf.horizontal_field(form.apt) }}
+			{{ wtf.horizontal_field(form.street) }}
+			{{ wtf.horizontal_field(form.city) }}
+			{{ wtf.horizontal_field(form.postal_code) }}
+		</fieldset>
+
+		<fieldset>
+			<legend>Contact</legend>
+			{{ wtf.horizontal_field(form.email) }}
+			{{ wtf.horizontal_field(form.primary_phone) }}
+			{{ wtf.horizontal_field(form.secondary_phone) }}
+		</fieldset>
+
+		{{ wtf.horizontal_field(form.marketing) }}
+		{{ wtf.horizontal_field(form.volunteering) }}
+
+		<div class="form-actions">
+			 <button name="register" type="submit" class="btn btn-primary">Register</button>
+		</div>
+	</form>
+{% endblock %}
+
+{% block bootstrap_js_bottom %}
+{{ super() }}
+<script>
+$("#primary_phone").mask("(999) 999-9999");
+$("#secondary_phone").mask("(999) 999-9999");
+</script>
+{% endblock %}
