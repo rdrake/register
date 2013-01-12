@@ -140,7 +140,6 @@ def register():
 def checkout():
 	# All players who have not been paid for already should show up.
 	players = [player for player in current_user.players if not player.paid]
-	park = Park.query.get(current_user.park_id)
 	fees = defaultdict(list)
 
 	# Enumerate through all of the players and create descriptions of each
@@ -154,7 +153,9 @@ def checkout():
 		p.append(["Convenience Fee", CONVENIENCE_FEE])
 	
 	if len(players) > 0 and current_user.customer_id is None or current_user.customer_id == "":
-		fees["Other"].append(["Park Fee - %s" % park.name, park.fee])
+		if current_user.park_id:
+			park = Park.query.get(current_user.park_id)
+			fees["Other"].append(["Park Fee - %s" % park.name, park.fee])
 
 	# Total everything up.
 	total = 0
@@ -187,6 +188,11 @@ def checkout():
 				for player in players:
 					player.paid = True
 					db.session.commit()
+
+				msg = Message("Your Registration Was Successful", recipients=[current_user.email])
+				msg.body = "We have successfully received your payment of $%0.2f.  Please complete the verification step by submitting supporting documentation to the following page:\n\nhttps://register.nascsoccer.org/verify" % (charge.amount / 100)
+
+				mail.send(msg)
 
 				# Also get verification.
 				return redirect("/verify")

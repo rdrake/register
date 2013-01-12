@@ -25,21 +25,42 @@
 		{{ wtf.horizontal_field(form.notes, placeholder="Please list any health concerns, allergies, etc.", rows="5") }}
 		{{ wtf.horizontal_field(form.pooling, placeholder="Please list any special requests here.  For example, if you want your child to play with another player or in another park, please specify here.", rows="5") }}
 
-		{{ wtf.horizontal_field(form.allstar) }}
+		<div class="control-group">
+			<div class="controls">
+				<label class="checkbox">
+					<input id="allstar" name="allstar" type="checkbox"> Please send me information about the All-Star/Selects program
+				</label>
+			</div>
+		</div>
 
 		<fieldset>
 			<legend>Playing History</legend>
-			{{ wtf.horizontal_field(form.played_before) }}
+			<div class="control-group">
+				<div class="controls">
+					<label class="checkbox">
+						<input id="played_before" name="played_before" type="checkbox" data-bind="checked: played_before"> Has the player played this sport before?
+					</label>
+				</div>
+			</div>
+
 			<div data-bind="visible: played_before">
 				{{ wtf.horizontal_field(form.played_years) }}
 				{{ wtf.horizontal_field(form.played_position) }}
 			</div>
 
-			{{ wtf.horizontal_field(form.osa_another_country) }}
-			<div data-bind="visible: osa_another_country">
-				{{ wtf.horizontal_field(form.osa_what_year) }}
-				{{ wtf.horizontal_field(form.osa_what_country) }}
-				{{ wtf.horizontal_field(form.osa_what_club) }}
+			<div data-bind="visible: isSoccer()">
+				<div class="control-group">
+					<div class="controls">
+						<label class="checkbox">
+							<input id="osa_another_country" name="osa_another_country" type="checkbox" data-bind="checked: osa_another_country"> Has the player registered to play soccer in another country?
+						</label>
+					</div>
+				</div>
+				<div data-bind="visible: osa_another_country">
+					{{ wtf.horizontal_field(form.osa_what_year) }}
+					{{ wtf.horizontal_field(form.osa_what_country) }}
+					{{ wtf.horizontal_field(form.osa_what_club) }}
+				</div>
 			</div>
 		</fieldset>
 
@@ -48,6 +69,18 @@
 			{{ wtf.horizontal_field(form.ec_name) }}
 			{{ wtf.horizontal_field(form.ec_num) }}
 		</fieldset>
+
+		<h2>Agreements</h2>
+
+		<div data-bind="visible: isSoccer()">
+			{% include "_soccer_legal.html" %}
+		</div>
+
+		<div data-bind="visible: isSoftball()">
+			{% include "_softball_legal.html" %}
+		</div>
+
+		<p><strong>By continuing with registration, you agree that you are the parent or legal guardian of the player being registered and to be bound by the above Legal Agreements even if you have not read them.</strong></p>
 
 		<div class="form-actions">
 			<button name="register" type="submit" class="btn btn-primary"><i class="icon-user"></i> Register</button>
@@ -60,8 +93,6 @@
 
 <script>
 	// Wire up attributes.
-	$("#played_before").attr("data-bind", "checked: played_before");
-	$("#osa_another_country").attr("data-bind", "checked: osa_another_country");
 	$("#gender").attr("data-bind", "value: gender");
 	$("#date_of_birth").attr("data-bind", "value: date_of_birth, valueUpdate: 'afterkeydown'");
 	$("#age_group_id").attr("data-bind", "options: programs, optionsText: 'text', optionsValue: 'id', value: program, optionsCaption: 'Select a Program...'");
@@ -87,6 +118,34 @@
 					}
 				);
 			}
+		};
+
+		self.isSoccer = function() {
+			if (self.program() == undefined) return false;
+
+			for (i in self.programs()) {
+				var program = self.programs()[i];
+				
+				if ((program.id == self.program()) && (program.sport == "Soccer")) {
+					return true;
+				}
+			}
+
+			return false;
+		};
+
+		self.isSoftball = function() {
+			if (self.program() == undefined) return false;
+
+			for (i in self.programs()) {
+				var program = self.programs()[i];
+				
+				if ((program.id == self.program()) && (program.sport == "Softball")) {
+					return true;
+				}
+			}
+
+			return false;
 		};
 
 		self.gender.subscribe(function(gender) {

@@ -29,9 +29,22 @@
 			{{ wtf.horizontal_field(form.secondary_phone) }}
 		</fieldset>
 
-		{{ wtf.horizontal_field(form.marketing) }}
-		{{ wtf.horizontal_field(form.volunteering) }}
+		<div class="control-group">
+			<div class="controls">
+				<label class="checkbox">
+					<input id="marketing" name="marketing" type="checkbox"> I'd like to receive emails from N.A.S.C. Soccer, Softball, and their affiliates
+				</label>
+			</div>
+		</div>
 
+		<div class="control-group">
+			<div class="controls">
+				<label class="checkbox">
+					<input id="volunteering" name="volunteering" type="checkbox"> I'd like to volunteer, please contact me with information on how to volunteer
+				</label>
+			</div>
+		</div>
+		
 		<div class="form-actions">
 			 <button name="register" type="submit" class="btn btn-primary">Register</button>
 		</div>
