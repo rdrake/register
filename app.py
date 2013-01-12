@@ -224,8 +224,6 @@ def upload():
 			player_id = request.form.get("player_id", None)
 			player_ids = [player.id for player in current_user.players]
 
-			print last_inserted_id
-
 			if player_id and int(player_id) in player_ids:
 				Player.query.get(player_id).verified_dob_doc = last_inserted_id
 			elif not player_id:
