@@ -17,8 +17,10 @@ g = geocoders.Google()
 CONVENIENCE_FEE = 500
 
 STRIPE_KEYS = {
-	"secret_key": "sk_076KrUmlyQWYeTysIbXuapSy7AWcX",
-	"publishable_key": "pk_076KVxlFN6XEzWvaHaTfES34ccZ7E"
+	#"secret_key": "sk_076KrUmlyQWYeTysIbXuapSy7AWcX",
+	"secret_key": "sk_076KMBjuzftnlqaTOHhsMfRRk8qhZ",
+	#"publishable_key": "pk_076KVxlFN6XEzWvaHaTfES34ccZ7E",
+	"publishable_key": "pk_076K5dtDYTT6lRCvpC6HrIWbSeY3a"
 }
 
 stripe.api_key = STRIPE_KEYS["secret_key"]
