@@ -44,7 +44,7 @@ class Guardian(db.Model, UserMixin):
 	province = db.Column(db.String(2))
 	postal_code = db.Column(db.String(6))
 
-	verified_addr = db.Column(db.Boolean())
+	verified_addr = db.Column(db.Boolean(), default=False)
 	verified_addr_doc = db.Column(db.Integer, db.ForeignKey("upload.id"))
 
 	# Contact Numbers
@@ -75,7 +75,7 @@ class Player(db.Model):
 	first_name = db.Column(db.String(63))
 	last_name = db.Column(db.String(63))
 
-	verified_dob = db.Column(db.Boolean())
+	verified_dob = db.Column(db.Boolean(), default=False)
 	verified_dob_doc = db.Column(db.Integer, db.ForeignKey("upload.id"))
 
 	date_of_birth = db.Column(db.Date())

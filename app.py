@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, flash, redirect, url_for, jsonify
+from flask import Flask, request, render_template, flash, redirect, url_for, jsonify, make_response, send_from_directory
 from flask.ext.bootstrap import Bootstrap
 from flask.ext.mail import Mail, Message
 from flask.ext.security import Security, SQLAlchemyUserDatastore, registerable, current_user, login_required, roles_accepted
@@ -256,12 +256,47 @@ db.session.commit()
 user_datastore.add_role_to_user(user, "admin")
 db.session.commit()
 """
-#@app.route("/moderate")
-#@login_required
-#@roles_accepted("admin", "moderator")
-#def moderate():
-#	# Want all addresses that are unverified by have documentation.
-#	addresses = Guardian.query.filter_by(verified_addr=False).filter(Guardian.verified_addr_doc != None)
+@app.route("/moderate")
+@login_required
+@roles_accepted("admin", "moderator")
+def moderate():
+	# Want all addresses that are unverified but have documentation.
+	addresses = Guardian.query.filter_by(verified_addr=False).filter(Guardian.verified_addr_doc != None)
+	# Players too.
+	players = Player.query.filter(Player.verified_dob != True).filter(Player.verified_dob_doc != None)
+
+	return render_template("moderate.html", addresses=addresses, players=players)
+
+@app.route("/api/upload/<int:id>")
+@login_required
+@roles_accepted("admin", "moderator")
+def view_upload(id):
+	upload = Upload.query.get_or_404(id)
+	return send_from_directory(app.config["UPLOADS_FOLDER"], upload.name)
+
+@app.route("/api/verify/player/<int:id>", methods=["POST"])
+@login_required
+@roles_accepted("admin", "moderator")
+def verify_player(id):
+	player = Player.query.get_or_404(id)
+	player.verified_dob = True
+	db.session.commit()
+
+	flash("Successfully verified date of birth for %s, %s" % (player.last_name, player.first_name))
+
+	return redirect("/moderate")
+
+@app.route("/api/verify/address/<int:id>", methods=["POST"])
+@login_required
+@roles_accepted("admin", "moderator")
+def verify_address(id):
+	guardian = Guardian.query.get_or_404(id)
+	guardian.verified_addr = True
+	db.session.commit()
+
+	flash("Successfully verified address for %s" % guardian.get_full_name())
+
+	return redirect("/moderate")
 
 @app.route("/api/programs")
 @login_required
@@ -287,9 +322,9 @@ def programs():
 if __name__ == "__main__":
 	app.run(debug=True, port=9090)
 
-#	if app.config['DEBUG']:
-#		from werkzeug import SharedDataMiddleware
-#		import os
-#		app.wsgi_app = SharedDataMiddleware(app.wsgi_app, {
-#			"/": os.path.join(os.path.dirname(__file__), "static")
-#		})
+	if app.config['DEBUG']:
+		from werkzeug import SharedDataMiddleware
+		import os
+		app.wsgi_app = SharedDataMiddleware(app.wsgi_app, {
+			"/": os.path.join(os.path.dirname(__file__), "static")
+		})
