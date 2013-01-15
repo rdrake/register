@@ -287,9 +287,9 @@ def programs():
 if __name__ == "__main__":
 	app.run(debug=True, port=9090)
 
-	if app.config['DEBUG']:
-		from werkzeug import SharedDataMiddleware
-		import os
-		app.wsgi_app = SharedDataMiddleware(app.wsgi_app, {
-			"/": os.path.join(os.path.dirname(__file__), "static")
-		})
+#	if app.config['DEBUG']:
+#		from werkzeug import SharedDataMiddleware
+#		import os
+#		app.wsgi_app = SharedDataMiddleware(app.wsgi_app, {
+#			"/": os.path.join(os.path.dirname(__file__), "static")
+#		})

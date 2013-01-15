@@ -1,7 +1,7 @@
 import os.path
 
 # Flask stuff.
-DEBUG = True
+#DEBUG = True
 SECRET_KEY = "d/)~6{d]c{N^Yo,}ETSMTxv8-z[yuuY/88 eK[[1Nwz=3"
 
 # The database is very trusting.
@@ -28,5 +28,5 @@ BOOTSTRAP_FONTAWESOME = True
 
 # flask-uploads
 DEFAULT_FILE_STORAGE = "filesystem"
-UPLOADS_FOLDER = os.path.join(os.path.abspath(os.path.dirname(__file__)), "static", "img")
+UPLOADS_FOLDER = os.path.join(os.path.abspath(os.path.dirname(__file__)), "proof")
 FILE_SYSTEM_STORAGE_FILE_VIEW = "static"
