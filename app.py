@@ -1,7 +1,7 @@
 from flask import Flask, request, render_template, flash, redirect, url_for, jsonify
 from flask.ext.bootstrap import Bootstrap
 from flask.ext.mail import Mail, Message
-from flask.ext.security import Security, SQLAlchemyUserDatastore, registerable, current_user, login_required
+from flask.ext.security import Security, SQLAlchemyUserDatastore, registerable, current_user, login_required, roles_accepted
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.storage import get_default_storage_class
 from flask.ext.uploads import init, save, Upload
@@ -242,9 +242,26 @@ def upload():
 
 			db.session.commit()
 		else:
-			flash("Not an image, do it again.")
+			flash("Did not receive an image file.  Please try again.")
 
 	return redirect("/verify")
+
+# For this to work, need to add role and user to role.
+"""
+from app import Guardian, Role, db, user_datastore
+user = Guardian.query.filter_by(email='rdrake@rdrake.org').first()
+user_datastore.create_role(name="admin", description="Administrator, can do anything")
+user_datastore.create_role(name="moderator", description="Moderates proof of address/dob/etc.")
+db.session.commit()
+user_datastore.add_role_to_user(user, "admin")
+db.session.commit()
+"""
+#@app.route("/moderate")
+#@login_required
+#@roles_accepted("admin", "moderator")
+#def moderate():
+#	# Want all addresses that are unverified by have documentation.
+#	addresses = Guardian.query.filter_by(verified_addr=False).filter(Guardian.verified_addr_doc != None)
 
 @app.route("/api/programs")
 @login_required
