@@ -71,6 +71,10 @@ def signup():
 				if park_street:
 					park_id = park_street.park_id
 			except:
+				msg = Message("No Park Determined!", recipients=["richard.drake@nascsoccer.org"])
+				msg.body = "Look into %s %s" % (form.first_name.data, form.last_name.data)
+
+				mail.send(msg)
 				pass
 
 			registerable.register_user(
@@ -151,13 +155,13 @@ def checkout():
 		p = fees[player.get_full_name()]
 
 		p.append(["%s - %s" % (ag.name, ag.sport), ag.basefee])
-		p.append(["User Fee", ag.userfee])
-		p.append(["Convenience Fee", CONVENIENCE_FEE])
+		p.append(["User Fee<sup>1</sup>", ag.userfee])
+		p.append(["Convenience Fee<sup>2</sup>", CONVENIENCE_FEE])
 	
 	if len(players) > 0 and current_user.customer_id is None or current_user.customer_id == "":
 		if current_user.park_id:
 			park = Park.query.get(current_user.park_id)
-			fees["Other"].append(["Park Fee - %s" % park.name, park.fee])
+			fees["Other"].append(["Park Fee - %s<sup>3</sup>" % park.name, park.fee])
 
 	# Total everything up.
 	total = 0
@@ -236,6 +240,11 @@ def upload():
 				Player.query.get(player_id).verified_dob_doc = last_inserted_id
 			elif not player_id:
 				current_user.verified_addr_doc = last_inserted_id
+
+			msg = Message("Registration Needs Verifying", recipients=["richard.drake@nascsoccer.org"])
+			msg.body = "New registrations from guardian %d, don't forget to verify!" % current_user.id
+
+			mail.send(msg)
 
 			# If none of the above are executed, chances are they're trying to
 			# change the documentation for a player they haven't registered.

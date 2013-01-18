@@ -11,7 +11,7 @@
 		<table class="table table-striped">
 			{% for (title, fee) in fees[player] %}
 			<tr>
-				<td>{{ title }}</td>
+				<td>{{ title|safe }}</td>
 				<td style="text-align: right">${{ "%0.2f"|format((fee / 100)|float) }}</td>
 			</tr>
 			{% endfor %}
@@ -23,6 +23,14 @@
 		<form action="/checkout" method="post">
 			<script src="https://checkout.stripe.com/v2/checkout.js" class="stripe-button" data-key="{{ key }}" data-label="Register" data-description="Registration fees" data-amount="{{ total }}"></script>
 		</form>
+
+		<h3>Fees</h3>
+
+		<ol>
+			<li>User fees are part of a decision by Oshawa City Council to <a href="http://www.oshawaexpress.ca/viewposting.php?view=2212">tax recreational sports in Oshawa</a>.</li>
+			<li>The convenience fee covers the credit card fees, as well as the hosting of the online registration.</li>
+			<li>Park fees are charged by parks.  This fee varies in amount depending on which park you reside in.</li>
+		</ol>
 	{% else %}
 	<p>Please <a href="/register">register a player</a> before proceeding to checkout.  If you have already registered a player and checked out, please ensure they are <a href="/verify">verified</a>.</p>
 	{% endif %}

@@ -10,18 +10,18 @@ def validate_email_unique(form, field):
 		raise ValidationError("Email must be unique")
 
 class RegistrationForm(Form):
-	email = EmailField("Email", validators=[Required(), Email(), validate_email_unique], default="rdrake@rdrake.org")
+	email = EmailField("Email", validators=[Required(), Email(), validate_email_unique])
 	password = PasswordField("Password", validators=[
 		Required(),
 		EqualTo("confirm", message="Passwords must match.")
 	])
 	confirm = PasswordField("Confirm Password")
 
-	first_name = TextField("First Name", validators=[Required()])
-	last_name = TextField("Last Name", validators=[Required()])
+	first_name = TextField("Guardian's First Name", validators=[Required()])
+	last_name = TextField("Guardian's Last Name", validators=[Required()])
 
 	apt = TextField("Apt")
-	street = TextField("Street", validators=[Required()])
+	street = TextField("Street Address", validators=[Required()])
 	city = TextField("City", validators=[Required()])
 	#province = TextField("Province", validators=[Required()], default="ON")
 	postal_code = TextField("Postal Code", validators=[Required(), Regexp("^\w{1}\d{1}\w{1}\s{0,1}\d{1}\w{1}\d{1}$")])
@@ -38,8 +38,8 @@ GENDERS = [("M", "Male"), ("F", "Female")]
 AGE_GROUPS = [(ag.id, ag.name) for ag in AgeGroup.query.all()]
 
 class PlayerRegistrationForm(Form):
-	first_name = TextField("First Name", validators=[Required()])
-	last_name = TextField("Last Name", validators=[Required()])
+	first_name = TextField("Child's First Name", validators=[Required()])
+	last_name = TextField("Child's Last Name", validators=[Required()])
 	date_of_birth = TextField("Date of Birth", validators=[Required()])
 
 	gender = SelectField("Gender", choices=GENDERS)
