@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, flash, redirect, url_for, jsonify, make_response, send_from_directory
+from flask import Flask, request, render_template, flash, redirect, url_for, jsonify, make_response, send_from_directory, abort
 from flask.ext.bootstrap import Bootstrap
 from flask.ext.mail import Mail, Message
 from flask.ext.security import Security, SQLAlchemyUserDatastore, registerable, current_user, login_required, roles_accepted
@@ -10,8 +10,10 @@ import stripe
 import os
 
 from collections import defaultdict
-from geopy import geocoders
 from datetime import datetime
+
+from geopy import geocoders
+from openpyxl import load_workbook
 
 g = geocoders.Google()
 
@@ -230,7 +232,7 @@ def upload():
 		photo = request.files["photo"]
 
 		# Only save images, ignore any other uploads.
-		if "image" in photo.mimetype:
+		if "image" in photo.mimetype or "application/pdf" in photo.mimetype:
 			save(photo)
 
 			last_inserted_id = Upload.query.all()[-1].id
@@ -253,7 +255,7 @@ def upload():
 
 			db.session.commit()
 		else:
-			flash("Did not receive an image file.  Please try again.")
+			flash("Did not receive an image file (PNG, JPEG, GIF, TIFF, etc) or PDF.  Please try again.")
 
 	return redirect("/verify")
 
@@ -277,6 +279,60 @@ def moderate():
 	players = Player.query.filter(Player.verified_dob != True).filter(Player.verified_dob_doc != None)
 
 	return render_template("moderate.html", addresses=addresses, players=players)
+
+@app.route("/waiver/<int:id>")
+@login_required
+@roles_accepted("admin", "moderator")
+def view_waiver(id):
+	player = Player.query.get_or_404(id)
+	guardian = player.guardian
+	ag = AgeGroup.query.get_or_404(player.age_group_id)
+
+	if guardian.park_id is None:
+		abort(404)
+	
+	park = Park.query.get_or_404(guardian.park_id)
+
+	wb = load_workbook("templates/waiverformtemplate.xlsx")
+	ws = wb.get_active_sheet()
+
+	ws.cell("E11").value = park.name
+	ws.cell("A13").value = player.last_name
+	ws.cell("D13").value = player.first_name
+	ws.cell("A16").value = player.date_of_birth.strftime("%Y-%m-%d")
+	ws.cell("A19").value = guardian.street
+	ws.cell("E19").value = guardian.apt
+	ws.cell("A22").value = guardian.city
+	ws.cell("C22").value = guardian.province
+	ws.cell("E22").value = guardian.postal_code
+	ws.cell("A25").value = guardian.email
+	ws.cell("A30").value = guardian.primary_phone
+	ws.cell("D30").value = guardian.secondary_phone
+	ws.cell("A35").value = player.ec_name
+	ws.cell("D35").value = player.ec_num
+	ws.cell("A39").value = player.notes
+	ws.cell("A43").value = " ".join([guardian.first_name, guardian.last_name])
+	ws.cell("G43").value = player.paid_at.strftime("%Y-%m-%d %H:%M:%S")
+	ws.cell("I12").value = ag.name
+	ws.cell("I13").value = "Yes" if len(player.pooling) > 0 else "No"
+	ws.cell("I14").value = player.pooling
+	ws.cell("I17").value = player.paid_at.strftime("%Y-%m-%d %H:%M:%S")
+	ws.cell("I19").value = ag.basefee / 100
+	ws.cell("I20").value = ag.userfee / 100
+	ws.cell("I21").value = park.fee / 100
+	ws.cell("I22").value = 5
+	ws.cell("I23").value = (ag.basefee + ag.userfee + park.fee + 500) / 100
+	ws.cell("I26").value = "Yes" if player.played_before else "No"
+	ws.cell("I29").value = player.played_years
+	ws.cell("I32").value = player.played_position
+
+	filename = "waivers/%d.xlsx" % id
+	wb.save(filename)
+	
+	try:
+		return send_file(filename)
+	except:
+		abort(404)
 
 @app.route("/api/upload/<int:id>")
 @login_required
