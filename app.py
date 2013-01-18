@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, flash, redirect, url_for, jsonify, make_response, send_from_directory, abort
+from flask import Flask, request, render_template, flash, redirect, url_for, jsonify, make_response, send_from_directory, abort, send_file
 from flask.ext.bootstrap import Bootstrap
 from flask.ext.mail import Mail, Message
 from flask.ext.security import Security, SQLAlchemyUserDatastore, registerable, current_user, login_required, roles_accepted
@@ -312,7 +312,7 @@ def view_waiver(id):
 	ws.cell("D35").value = player.ec_num
 	ws.cell("A39").value = player.notes
 	ws.cell("A43").value = " ".join([guardian.first_name, guardian.last_name])
-	ws.cell("G43").value = player.paid_at.strftime("%Y-%m-%d %H:%M:%S")
+	ws.cell("G43").value = player.paid_at.strftime("%Y-%m-%d")
 	ws.cell("I12").value = ag.name
 	ws.cell("I13").value = "Yes" if len(player.pooling) > 0 else "No"
 	ws.cell("I14").value = player.pooling
@@ -331,7 +331,8 @@ def view_waiver(id):
 	
 	try:
 		return send_file(filename)
-	except:
+	except Exception as e:
+		print e
 		abort(404)
 
 @app.route("/api/upload/<int:id>")
