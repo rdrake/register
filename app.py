@@ -293,7 +293,7 @@ def view_waiver(id):
 	
 	park = Park.query.get_or_404(guardian.park_id)
 
-	wb = load_workbook("templates/waiverformtemplate.xlsx")
+	wb = load_workbook(os.path.join(os.path.dirname(__file__), "templates", "waiverformtemplate.xlsx"))
 	ws = wb.get_active_sheet()
 
 	ws.cell("E11").value = park.name
@@ -326,13 +326,12 @@ def view_waiver(id):
 	ws.cell("I29").value = player.played_years
 	ws.cell("I32").value = player.played_position
 
-	filename = "waivers/%d.xlsx" % id
+	filename = os.path.join(app.config["WAIVERS_FOLDER"], "%d.xlsx" % id)
 	wb.save(filename)
 	
 	try:
 		return send_file(filename)
 	except Exception as e:
-		print e
 		abort(404)
 
 @app.route("/api/upload/<int:id>")

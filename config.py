@@ -30,3 +30,5 @@ BOOTSTRAP_FONTAWESOME = True
 DEFAULT_FILE_STORAGE = "filesystem"
 UPLOADS_FOLDER = os.path.join(os.path.abspath(os.path.dirname(__file__)), "proof")
 FILE_SYSTEM_STORAGE_FILE_VIEW = "static"
+
+WAIVERS_FOLDER = os.path.join(os.path.abspath(os.path.dirname(__file__)), "waivers")
