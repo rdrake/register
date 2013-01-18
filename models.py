@@ -3,23 +3,6 @@ from flask.ext.sqlalchemy import SQLAlchemy
 
 from datetime import datetime
 
-import psycopg2
-import psycopg2.extras
-
-class _SQLAlchemy(SQLAlchemy):
-	def apply_driver_hacks(self, app, info, options):
-		"""This method adds option to support hstore on psycopg2"""
-
-		if info.drivername == "postgres":
-			def _connect():
-				conn = psycopg2.connect(user=info.username, host=info.host, port=info.port, dbname=info.database, password=info.password)
-				psycopg2.extras.register_hstore(conn)
-				
-				return conn
-			options["creator"] = _connect
-		
-		SQLAlchemy.apply_driver_hacks(self, app, info, options)
-
 db = SQLAlchemy()
 
 roles_users = db.Table('roles_users',
@@ -104,7 +87,8 @@ class Player(db.Model):
 	paid = db.Column(db.Boolean())
 	active = db.Column(db.Boolean())
 
-	created_at = db.Column(db.DateTime, default=datetime.now())
+	paid_at = db.Column(db.DateTime)
+	confirmed_at = db.Column(db.DateTime)
 
 	def get_full_name(self):
 		return " ".join([self.first_name, self.last_name])

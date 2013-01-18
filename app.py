@@ -11,6 +11,7 @@ import os
 
 from collections import defaultdict
 from geopy import geocoders
+from datetime import datetime
 
 g = geocoders.Google()
 
@@ -193,6 +194,7 @@ def checkout():
 			if charge.paid:
 				for player in players:
 					player.paid = True
+					player.paid_at = datetime.now()
 					db.session.commit()
 
 				msg = Message("Your Registration Was Successful", recipients=[current_user.email])
@@ -242,7 +244,7 @@ def upload():
 				current_user.verified_addr_doc = last_inserted_id
 
 			msg = Message("Registration Needs Verifying", recipients=["richard.drake@nascsoccer.org"])
-			msg.body = "New registrations from guardian %d, don't forget to verify!" % current_user.id
+			msg.body = "Guardian %d, submitted verification!" % current_user.id
 
 			mail.send(msg)
 
@@ -289,6 +291,7 @@ def view_upload(id):
 def verify_player(id):
 	player = Player.query.get_or_404(id)
 	player.verified_dob = True
+	player.confirmed_at = datetime.now()
 	db.session.commit()
 
 	flash("Successfully verified date of birth for %s, %s" % (player.last_name, player.first_name))
@@ -301,6 +304,7 @@ def verify_player(id):
 def verify_address(id):
 	guardian = Guardian.query.get_or_404(id)
 	guardian.verified_addr = True
+	guardian.confirmed_at = datetime.now()
 	db.session.commit()
 
 	flash("Successfully verified address for %s" % guardian.get_full_name())
