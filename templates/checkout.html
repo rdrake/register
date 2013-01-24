@@ -34,7 +34,7 @@
 
 		<script src="https://checkout.stripe.com/v2/checkout.js"></script>
 
-		<!--<form action="/checkout" method="post" class="pull-right">
+		<form action="/checkout" method="post" class="pull-right">
 			<script src="https://checkout.stripe.com/v2/checkout.js"
 				class="stripe-button"
 				data-key="{{ key }}"
@@ -42,11 +42,7 @@
 				data-amount="{{ total }}"
 				data-name="Summer Sports Registration"
 				data-description="Registration Fees (${{ "%0.2f"|format((total / 100)|float) }})"></script>
-		</form>-->
-
-		<button id="checkout-button" class="btn btn-primary btn-large pull-right">
-			<i class="icon-lock"></i> Checkout
-		</button>
+		</form>
 
 		<h3>Fees</h3>
 
@@ -58,33 +54,4 @@
 	{% else %}
 	<p>Please <a href="/register">register a player</a> before proceeding to checkout.  If you have already registered a player and checked out, please ensure they are <a href="/verify">verified</a>.</p>
 	{% endif %}
-{% endblock %}
-
-{% block bootstrap_js_bottom %}
-	{{ super() }}
-
-	<script>
-		$("#checkout-button").click(function() {
-			var token = function(res) {
-				$.post("/checkout", {
-					stripeToken: res.id
-				}, function(data) {
-					// Redirect user to verification step.  Should not get to this
-					//step if they don't complete the payment form.
-					document.location.href = "/verify";
-				});
-			};
-
-			StripeCheckout.open({
-				key:					"{{ key }}",
-				amount:				{{ total }},
-				name:					"Summer Sports Registration",
-				description:	"Registration Fees (${{ "%0.2f"|format((total / 100)|float) }})",
-				panelLabel:		"Pay",
-				token:				token
-			});
-
-			return false;
-		});
-	</script>
 {% endblock %}
