@@ -5,22 +5,36 @@
 	<h1>Checkout</h1>
 
 	{% if fees %}
-		{% for player in fees %}
-		<strong>{{ player }}</strong>
-
 		<table class="table table-striped">
-			{% for (title, fee) in fees[player] %}
+			{% for player in fees %}
 			<tr>
-				<td>{{ title|safe }}</td>
-				<td style="text-align: right">${{ "%0.2f"|format((fee / 100)|float) }}</td>
+				<td>
+					<strong>{{ player }}</strong>
+					{% for (title, fee) in fees[player] %}
+					<br><span class="indent">{{ title|safe }}</span>
+					{% endfor %}
+				</td>
+				<td style="text-align: right;">
+					{% for (title, fee) in fees[player] %}
+					<br><span>${{ "%0.2f"|format((fee / 100)|float) }}</span>
+					{% endfor %}<br>
+				</td>
 			</tr>
 			{% endfor %}
+			<tr>
+				<td><strong>Total</strong></td>
+				<td style="text-align: right;">
+					<strong>
+						${{ "%0.2f"|format((total / 100)|float) }}
+					</strong>
+					<br>
+				</td>
+			</tr>
 		</table>
-		{% endfor %}
 
-		<strong>Total ${{ "%0.2f"|format((total / 100)|float) }}</strong>
+		<script src="https://checkout.stripe.com/v2/checkout.js"></script>
 
-		<form action="/checkout" method="post">
+		<!--<form action="/checkout" method="post" class="pull-right">
 			<script src="https://checkout.stripe.com/v2/checkout.js"
 				class="stripe-button"
 				data-key="{{ key }}"
@@ -28,7 +42,11 @@
 				data-amount="{{ total }}"
 				data-name="Summer Sports Registration"
 				data-description="Registration Fees (${{ "%0.2f"|format((total / 100)|float) }})"></script>
-		</form>
+		</form>-->
+
+		<button id="checkout-button" class="btn btn-primary btn-large pull-right">
+			<i class="icon-lock"></i> Checkout
+		</button>
 
 		<h3>Fees</h3>
 
@@ -40,4 +58,33 @@
 	{% else %}
 	<p>Please <a href="/register">register a player</a> before proceeding to checkout.  If you have already registered a player and checked out, please ensure they are <a href="/verify">verified</a>.</p>
 	{% endif %}
+{% endblock %}
+
+{% block bootstrap_js_bottom %}
+	{{ super() }}
+
+	<script>
+		$("#checkout-button").click(function() {
+			var token = function(res) {
+				$.post("/checkout", {
+					stripeToken: res.id
+				}, function(data) {
+					// Redirect user to verification step.  Should not get to this
+					//step if they don't complete the payment form.
+					document.location.href = "/verify";
+				});
+			};
+
+			StripeCheckout.open({
+				key:					"{{ key }}",
+				amount:				{{ total }},
+				name:					"Summer Sports Registration",
+				description:	"Registration Fees (${{ "%0.2f"|format((total / 100)|float) }})",
+				panelLabel:		"Pay",
+				token:				token
+			});
+
+			return false;
+		});
+	</script>
 {% endblock %}
