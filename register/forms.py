@@ -21,7 +21,7 @@ class RegistrationForm(Form):
 	last_name = TextField("Guardian's Last Name", validators=[Required()])
 
 	apt = TextField("Apt")
-	street = TextField("Street Address", validators=[Required()])
+	street = TextField("Street Address", validators=[Required(), Regexp("^\d+", message="Please enter in your full address.")])
 	city = TextField("City", validators=[Required()])
 	#province = TextField("Province", validators=[Required()], default="ON")
 	postal_code = TextField("Postal Code", validators=[Required(), Regexp("^\w{1}\d{1}\w{1}\s{0,1}\d{1}\w{1}\d{1}$")])

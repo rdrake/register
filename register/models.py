@@ -123,3 +123,10 @@ class AgeGroup(db.Model):
 
 	players = db.relationship("Player", backref="agegroup", lazy="dynamic")
 
+class Payment(db.Model):
+	id = db.Column(db.String(32), primary_key=True)
+	guardian_id = db.Column(db.Integer, db.ForeignKey("guardian.id"))
+	amount = db.Column(db.Integer())
+	fee = db.Column(db.Integer())
+	paid = db.Column(db.Boolean)
+	paid_at = db.Column(db.DateTime)
