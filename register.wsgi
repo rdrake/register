@@ -19,4 +19,7 @@ for item in list(sys.path):
 
 sys.path[:0] = new_sys_path 
 
-from app import app as application
+from register import app as application
+
+import logging, sys
+logging.basicConfig(stream=sys.stderr)

@@ -279,7 +279,7 @@ def view_waiver(id):
 	park = Park.query.get_or_404(guardian.park_id)
 
 	waivers_folder = app.config["WAIVERS_FOLDER"]
-	waiver_template = os.path.join("register", "templates", "waiverformtemplate.pdf")
+	waiver_template = os.path.join(waivers_folder, "waiverformtemplate.pdf")
 
 	fields = [
 		("park", park.name.title()),
@@ -318,7 +318,6 @@ def view_waiver(id):
 
 	fdf = forge_fdf("", fields, [], [], [])
 	fdf_file = open(fdf_path, "w")
-	print fdf_path
 	fdf_file.write(fdf)
 	fdf_file.close()
 
