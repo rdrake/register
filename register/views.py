@@ -24,7 +24,7 @@ g = geocoders.Google()
 def home():
 	return render_template("index.html")
 
-def _alert_no_park():
+def _alert_no_park(form):
 	msg = Message("No Park Determined!", recipients=["richard.drake@nascsoccer.org"])
 	msg.body = "Look into %s %s" % (form.first_name.data, form.last_name.data)
 
@@ -46,9 +46,9 @@ def signup():
 				if park_street:
 					park_id = park_street.park_id
 				else:
-					_alert_no_park()
+					_alert_no_park(form)
 			except:
-				_alert_no_park()
+				_alert_no_park(form)
 
 			registerable.register_user(
 				email = form.email.data,
