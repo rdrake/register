@@ -286,6 +286,7 @@ def view_waiver(id):
 		("last_name", player.last_name.title()),
 		("first_name", player.first_name.title()),
 		("date_of_birth", player.date_of_birth),
+		("gender", player.gender),
 		("street", guardian.street.title()),
 		("apt", guardian.apt),
 		("city", guardian.city.title()),
@@ -310,7 +311,10 @@ def view_waiver(id):
 		("onlinefee", format_currency(CONVENIENCE_FEE)),
 		("total", format_currency(age_group.basefee + age_group.userfee + park.fee + CONVENIENCE_FEE)),
 		("guardian_name", guardian.get_full_name().title()),
-		("date", player.paid_at.strftime("%Y-%m-%d"))
+		("date", player.paid_at.strftime("%Y-%m-%d")),
+		("gid", "G{0:06d}".format(guardian.id)),
+		("pid", "P{0:06d}".format(player.id)),
+		("tax_year", "2013")
 	]
 
 	fdf_path = os.path.join(waivers_folder, "%d.fdf" % id)
@@ -323,7 +327,7 @@ def view_waiver(id):
 
 	from subprocess import call
 
-	call("pdftk %s fill_form %s output %s flatten" % (waiver_template, fdf_path, output_path), shell=True)
+	call("pdftk %s fill_form %s output %s" % (waiver_template, fdf_path, output_path), shell=True)
 
 	return send_file(output_path)
 
