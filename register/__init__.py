@@ -25,17 +25,17 @@ CONVENIENCE_FEE = 500
 
 # Set to live keys by default.
 STRIPE_KEYS = {
-	"secret_key": "sk_076KMBjuzftnlqaTOHhsMfRRk8qhZ",
-	"publishable_key": "pk_076K5dtDYTT6lRCvpC6HrIWbSeY3a"
+  "secret_key": "sk_076KMBjuzftnlqaTOHhsMfRRk8qhZ",
+  "publishable_key": "pk_076K5dtDYTT6lRCvpC6HrIWbSeY3a"
 }
 
 if sys.platform == "darwin":
-	app.debug = True
+  app.debug = True
 
-	STRIPE_KEYS = {
-		"secret_key": "sk_076KrUmlyQWYeTysIbXuapSy7AWcX",
-		"publishable_key": "pk_076KVxlFN6XEzWvaHaTfES34ccZ7E",
-	}
+  STRIPE_KEYS = {
+    "secret_key": "sk_076KrUmlyQWYeTysIbXuapSy7AWcX",
+    "publishable_key": "pk_076KVxlFN6XEzWvaHaTfES34ccZ7E",
+  }
 
 stripe.api_key = STRIPE_KEYS["secret_key"]
 
@@ -53,4 +53,4 @@ toolbar = DebugToolbarExtension(app)
 from .views import home, signup, register, checkout, success, verify, upload, moderate, view_upload, verify_player, verify_address, programs
 
 #if __name__ == "__main__":
-#	app.run(debug=True, port=9090)
+#  app.run(debug=True, port=9090)
