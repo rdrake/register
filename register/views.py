@@ -299,9 +299,6 @@ def generate_receipt(id):
 
   fee = owed_total == paid_total
 
-  print owed_total
-  print paid_total
-
   for player in players:
     age_group = AgeGroup.query.get_or_404(player.age_group_id)
     park_fee = park.fee if fee else 0
