@@ -3,7 +3,7 @@ from .forms import RegistrationForm, PlayerRegistrationForm
 from .models import Guardian, Role, Player, AgeGroup, Park, ParkStreet, Payment
 from .util import clean_phone_num, format_currency, format_phone_num, format_postal_code
 
-from flask import request, render_template, flash, jsonify, redirect, send_from_directory, send_file
+from flask import request, render_template, flash, jsonify, redirect, send_from_directory, send_file, Response, stream_with_context
 from flask.ext.mail import Message
 from flask.ext.security import login_required, roles_accepted, current_user, registerable
 from flask.ext.uploads import save, Upload
@@ -17,7 +17,7 @@ from fdfgen import forge_fdf
 
 import stripe
 
-import os.path
+import os.path, os
 
 g = geocoders.GoogleV3()
 
@@ -270,20 +270,8 @@ def view_upload(id):
   upload = Upload.query.get_or_404(id)
   return send_from_directory(app.config["UPLOADS_FOLDER"], upload.name)
 
-def generate_receipt(id):
-  guardian = Guardian.query.get_or_404(id)
-  park = Park.query.get_or_404(guardian.park_id)
-  fee = False
-
-  waivers_folder = app.config["WAIVERS_FOLDER"]
-  waiver_template = os.path.join(waivers_folder, "waiverformtemplate.pdf")
-  players = [p for p in guardian.players if p.paid and p.verified_dob]
-  output_paths = []
-
-  if guardian.customer_id == "" or len(players) == 0 or not guardian.verified_addr:
-    return "No players registered and/or verified", 418
-
-  charges = stripe.Charge.all(customer=guardian.customer_id)
+def _paid_park_fee(park, customer_id, players):
+  charges = stripe.Charge.all(customer=customer_id)
 
   paid_total = 0
   owed_total = 0
@@ -297,7 +285,91 @@ def generate_receipt(id):
 
   owed_total += park.fee
 
-  fee = owed_total == paid_total
+  return owed_total == paid_total
+
+@app.route("/api/all/")
+@login_required
+@roles_accepted("admin")
+def view_all_csv():
+  def generate():
+    yield ",".join([
+      "GID", "Email", "GFN", "GLN", "Apt", "Street", "City", "Province",
+      "Postal Code", "Verified Address", "Primary Phone", "Secondary Phone",
+      "Marketing", "Volunteering", "PID", "PFN", "PLN", "Verified DOB",
+      "DOB", "Gender", "Played Before", "Played Years", "Played Position",
+      "Notes", "Pooling", "All-Star", "EC Name", "EC Number", "Paid",
+      "Paid At", "Park", "Age Group", "Base Fee", "User Fee", "Park Fee",
+      "Sport"
+    ]) + os.linesep
+
+    for guardian in Guardian.query.all():
+      if guardian.customer_id == "" or guardian.park_id == None:
+        continue
+
+      park = Park.query.get_or_404(guardian.park_id)
+      players = [p for p in guardian.players if p.paid]
+      fee = _paid_park_fee(park, guardian.customer_id, players)
+
+      for player in players:
+        age_group = AgeGroup.query.get_or_404(player.age_group_id)
+        park_fee = park.fee if fee else 0
+
+        yield ",".join(map(lambda x: str(x), [
+          guardian.id,
+          guardian.email,
+          guardian.first_name,
+          guardian.last_name,
+          guardian.apt,
+          guardian.street,
+          guardian.city,
+          guardian.province,
+          guardian.postal_code,
+          guardian.verified_addr,
+          guardian.primary_phone,
+          guardian.secondary_phone,
+          guardian.marketing,
+          guardian.volunteering,
+          player.id,
+          player.first_name,
+          player.last_name,
+          player.verified_dob,
+          player.date_of_birth,
+          player.gender,
+          player.played_before,
+          player.played_years,
+          player.played_position,
+          player.notes,
+          player.pooling,
+          player.allstar,
+          player.ec_name,
+          player.ec_num,
+          player.paid,
+          player.paid_at,
+          park.name,
+          age_group.name,
+          format_currency(age_group.basefee),
+          format_currency(age_group.userfee),
+          format_currency(park_fee),
+          age_group.sport
+        ])) + os.linesep
+
+        fee = False
+
+  return Response(stream_with_context(generate()), mimetype="text/csv")
+
+def generate_receipt(id):
+  guardian = Guardian.query.get_or_404(id)
+  park = Park.query.get_or_404(guardian.park_id)
+
+  waivers_folder = app.config["WAIVERS_FOLDER"]
+  waiver_template = os.path.join(waivers_folder, "waiverformtemplate.pdf")
+  players = [p for p in guardian.players if p.paid and p.verified_dob]
+  output_paths = []
+
+  if guardian.customer_id == "" or len(players) == 0 or not guardian.verified_addr:
+    return "No players registered and/or verified", 418
+
+  fee = _paid_park_fee(park, guardian.customer_id, players)
 
   for player in players:
     age_group = AgeGroup.query.get_or_404(player.age_group_id)
