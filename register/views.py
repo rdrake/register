@@ -294,12 +294,12 @@ def view_all_csv():
   def generate():
     yield ",".join([
       "GID", "Email", "GFN", "GLN", "Apt", "Street", "City", "Province",
-      "Postal Code", "Verified Address", "Primary Phone", "Secondary Phone",
-      "Marketing", "Volunteering", "PID", "PFN", "PLN", "Verified DOB",
-      "DOB", "Gender", "Played Before", "Played Years", "Played Position",
-      "Notes", "Pooling", "All-Star", "EC Name", "EC Number", "Paid",
-      "Paid At", "Park", "Age Group", "Base Fee", "User Fee", "Park Fee",
-      "Sport"
+      "Postal Code", "Verified Address", "Primary Phone",
+      "Secondary Phone", "Marketing", "Volunteering", "PID", "PFN",
+      "PLN", "Verified DOB", "DOB", "Gender", "Played Before",
+      "Played Years", "Played Position", "Notes", "Pooling", "All-Star",
+      "EC Name", "EC Number", "Paid", "Paid At", "Park", "Age Group",
+      "Base Fee", "User Fee", "Park Fee", "Sport"
     ]) + os.linesep
 
     for guardian in Guardian.query.all():
@@ -314,7 +314,7 @@ def view_all_csv():
         age_group = AgeGroup.query.get_or_404(player.age_group_id)
         park_fee = park.fee if fee else 0
 
-        yield ",".join(map(lambda x: str(x), [
+        yield ",".join(map(lambda x: "\"%s\"" % str(x), [
           guardian.id,
           guardian.email,
           guardian.first_name,
