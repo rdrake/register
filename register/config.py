@@ -21,6 +21,7 @@ SECURITY_PASSWORD_HASH = "bcrypt" #"pbkdf2_sha512"
 SECURITY_PASSWORD_SALT = "A!T|=1WGR`UX4?jX|:qgEa{})[(T8Y6#-|zz+kTsR6c2J2/5<%-M#zm,V=TXx88I"
 SECURITY_EMAIL_SENDER = "no-reply@nascsoccer.org"
 SECURITY_CONFIRMABLE = True
+SECURITY_RECOVERABLE = True
 
 # Setup flask-bootstrap.  For some reason it defaults to "1" which is 404.
 BOOTSTRAP_JQUERY_VERSION = "1.8.3"
