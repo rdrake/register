@@ -16,10 +16,12 @@ from geopy import geocoders
 from fdfgen import forge_fdf
 
 import stripe
+import redis
 
 import os.path, os
 
 g = geocoders.GoogleV3()
+stripe_cache = redis.StrictRedis("localhost")
 
 @app.route('/')
 def home():
@@ -271,13 +273,19 @@ def view_upload(id):
   return send_from_directory(app.config["UPLOADS_FOLDER"], upload.name)
 
 def _paid_park_fee(park, customer_id, players):
-  charges = stripe.Charge.all(customer=customer_id)
-
   paid_total = 0
   owed_total = 0
 
-  for charge in enumerate(charges.data):
-    paid_total += charge[1].amount
+  if stripe_cache.exists(customer_id):
+    paid_total = stripe_cache.get(customer_id)
+  else:
+    charges = stripe.Charge.all(customer=customer_id)
+
+    for charge in enumerate(charges.data):
+      paid_total += charge[1].amount
+
+    stripe_cache.set(customer_id, paid_total)
+    stripe_cache.expire(customer_id, 60*60*24) # One day
 
   for player in players:
     age_group = AgeGroup.query.get_or_404(player.age_group_id)

@@ -2,6 +2,12 @@
 {% import "bootstrap_wtf.html" as wtf %}
 
 {% block content %}
+  <div class="alert alert-block">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <h4>Verification Required</h4>
+    By completing the checkout process you agree to pay all registration fees listed on this page.  You also agree to upload proof of residency as well as proof of age.  If you do not wish to upload these documents to our registration system, please do not continue.
+  </div>
+
 	<h1>Checkout</h1>
 
 	{% if fees %}
@@ -48,7 +54,7 @@
 
 		<ol>
 			<li>User fees are part of a decision by Oshawa City Council to <a href="http://www.oshawaexpress.ca/viewposting.php?view=2212">tax recreational sports in Oshawa</a>.</li>
-			<li>The convenience fee covers the credit card fees, as well as the hosting of the online registration.</li>
+			<li>The convenience fee covers the costs of hosting the online registration.</li>
 			<li>Park fees are charged by parks.  This fee varies in amount depending on which park you reside in.</li>
 		</ol>
 	{% else %}
