@@ -485,6 +485,7 @@ def programs():
   programs = AgeGroup.query.filter(
     date_of_birth <= AgeGroup.end,
     date_of_birth >= AgeGroup.start,
+    AgeGroup.sport == 'Softball',
     AgeGroup.gender.like("%%%s%%" % gender)
   ).all()
 
