@@ -277,7 +277,7 @@ def _paid_park_fee(park, customer_id, players):
   owed_total = 0
 
   if stripe_cache.exists(customer_id):
-    paid_total = stripe_cache.get(customer_id)
+    paid_total = int(stripe_cache.get(customer_id))
   else:
     charges = stripe.Charge.all(customer=customer_id)
 
