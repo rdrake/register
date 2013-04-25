@@ -1,19 +1,17 @@
-from flask import Flask, request, render_template, flash, redirect, url_for, jsonify, make_response, send_from_directory, abort, send_file
+from flask import Flask
 from flask.ext.bootstrap import Bootstrap
-from flask.ext.mail import Mail, Message
-from flask.ext.security import Security, SQLAlchemyUserDatastore, registerable
-from flask.ext.sqlalchemy import SQLAlchemy
+from flask.ext.mail import Mail
+from flask.ext.security import Security, SQLAlchemyUserDatastore
 from flask.ext.storage import get_default_storage_class
 from flask.ext.uploads import init
 
 from flask_debugtoolbar import DebugToolbarExtension
 
-import os
 import sys
 
 import stripe
 
-from .models import Guardian, Role, Player, AgeGroup, Park, ParkStreet, db
+from .models import Guardian, Role, db
 
 app = Flask(__name__)
 app.config.from_pyfile("config.py")
@@ -50,7 +48,7 @@ init(db, storage)
 
 toolbar = DebugToolbarExtension(app)
 
-from .views import home, signup, register, checkout, success, verify, upload, moderate, view_upload, verify_player, verify_address, programs
+from .views import home
 
 #if __name__ == "__main__":
 #  app.run(debug=True, port=9090)

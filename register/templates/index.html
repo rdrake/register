@@ -2,30 +2,21 @@
 {% block content %}
 <div class="hero-unit">
   {% if current_user.is_authenticated() %}
-  <h1>Welcome, {{ current_user.first_name }}!</h1>
+    <h1>Welcome, {{ current_user.first_name }}!</h1>
 
-  <p>Please use the following link in order to <a href="/register">register</a> one or more children for our summer sports program.</p>
+    <p>Our online registration system is no longer accepting players.  Please visit the Oshawa N.A.S.C. <a href="http://nascsoccer.org/house-league/registration/">Soccer</a> or <a href="http://nascsoftball.org/Registration.html">Softball</a> websites for in-person registration dates and times.</p>
 
-  {% if current_user.players.count() > 0 %}
-  <p>If you've already registered your child or children, please proceed to <a href="/checkout">checkout</a> in order to complete your registration.</p>
-  {% endif %}
-
-  <a href="/register" class="btn btn-primary btn-large"><i class="icon-user"></i> Register Player</a>
-
-  {% if current_user.players.count() > 0 %}
-    <a href="/checkout" class="btn btn-large"><i class="icon-shopping-cart"></i> Checkout</a>
-  {% endif %}
-
+    {% if current_user.players.count() > 0 %}
+      <p>If you've completed the verification step, your receipt for the <a href="http://www.fin.gov.on.ca/en/credit/catc/">Children's Activity Tax Credit</a> can be accessed <a href="/api/receipt/">here</a>.</p>
+    {% endif %}
   {% else %}
+    <h1>Hello!</h1>
 
-  <h1>Hello!</h1>
+    <p>Welcome to the online registration system for Oshawa N.A.S.C. Soccer & Softball.  Our online registration system is no longer accepting players.  Please visit the Oshawa N.A.S.C. <a href="http://nascsoccer.org/house-league/registration/">Soccer</a> or <a href="http://nascsoftball.org/Registration.html">Softball</a> websites for in-person registration dates and times.</p>
 
-  <p>Welcome to the online registration system for Oshawa N.A.S.C. Soccer & Softball.  If you haven't already, please <a href="/signup">register for an account</a> in order to register your child or children for our summer sports program.</p>
+    <p>If you already have an account and would like to download your receipt, please <a href="/login">login</a>.</p>
 
-  <p>If you already have an account and would like to register a player, please <a href="/login">login</a>.</p>
-
-  <a href="/signup" class="btn btn-primary btn-large"><i class="icon-user"></i> Register</a>
-  <a href="/login" class="btn btn-large"><i class="icon-signin"></i> Login</a>
+    <a href="/login" class="btn btn-large"><i class="icon-signin"></i> Login</a>
   {% endif %}
 </div>
 {% endblock %}

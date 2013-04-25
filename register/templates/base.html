@@ -23,21 +23,7 @@
         <ul class="nav">
           <li><a href="/">Home</a></li>
           {% if current_user.is_authenticated() %}
-            <li><a href="/register"><span class="badge badge-inverse">1</span> Register Player</a></li>
-
-            {% if current_user.players.count() > 0 %}
-              <li><a href="/checkout"><span class="badge badge-inverse">2</span> Checkout</a></li>
-            {% else %}
-              <li><a href="#"><span class="badge">2</span> Checkout</a></li>
-            {% endif %}
-
-            {% if current_user.customer_id %}
-              <li><a href="/verify"><span class="badge badge-inverse">3</span> Verify</a></li>
-            {% else %}
-              <li><a href="#"><span class="badge">3</span> Verify</a></li>
-            {% endif %}
-          {% else %}
-            <li><a href="/signup">Sign Up</a></li>
+            <li><a href="/api/receipt/">Download Receipt</a></li>
           {% endif %}
         </ul>
       </div><!--/.nav-collapse -->
@@ -77,17 +63,7 @@
       </div>
       {% endfor %}
     {% endif %}
-    {% endwith %}
-
-    {% if current_user.is_authenticated() %}
-      <div class="alert alert-info">
-        <strong>Receipts</strong> If you've completed the verification step, your receipt for the <a href="http://www.fin.gov.on.ca/en/credit/catc/">Children's Activity Tax Credit</a> can be accessed <a href="/api/receipt/">here</a>.
-      </div>
-    {% endif %}
-
-    <div class="alert alert-info">
-      <strong>Soccer Registration</strong> Online registration for soccer has ended.  Please visit an <a href="http://nascsoccer.org/house-league/registration/">in-person registration</a> in order to register for our soccer program.
-    </div>
+  {% endwith %}
 
   {% block content %}{% endblock %}
 </div>
